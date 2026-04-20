@@ -1,0 +1,293 @@
+:root {
+  color: #17201b;
+  background: #f5f6f1;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  align-items: center;
+  background: #1f6f54;
+  border: 0;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 750;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 14px;
+}
+
+button:hover {
+  background: #174f3e;
+}
+
+.app {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 32px 20px 48px;
+}
+
+.topbar {
+  align-items: flex-start;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.brand {
+  align-items: center;
+  color: #1f6f54;
+  display: inline-flex;
+  font-weight: 900;
+  gap: 9px;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  line-height: 0.95;
+  margin: 12px 0;
+  max-width: 780px;
+}
+
+p {
+  color: #59635e;
+  line-height: 1.55;
+}
+
+.profile,
+.metric,
+.taskCard,
+.loginPanel,
+.demoAccounts {
+  background: white;
+  border: 1px solid #dde2d7;
+  border-radius: 8px;
+  box-shadow: 0 18px 50px rgba(23, 32, 27, 0.08);
+}
+
+.profile {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+}
+
+.profile strong {
+  background: #e7f3eb;
+  border-radius: 999px;
+  color: #1f6f54;
+  padding: 5px 10px;
+}
+
+.iconButton {
+  min-height: 36px;
+  padding: 8px;
+}
+
+.metrics {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.metric {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.metric svg {
+  color: #1f6f54;
+}
+
+.metric strong {
+  font-size: 2.2rem;
+}
+
+.taskForm {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1.4fr 1.8fr repeat(4, minmax(130px, 0.8fr)) auto;
+  margin: 18px 0 24px;
+}
+
+input,
+select {
+  background: white;
+  border: 1px solid #cfd8cf;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.board {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.column {
+  min-width: 0;
+}
+
+.column h2 {
+  font-size: 1rem;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.taskCard {
+  margin-bottom: 14px;
+  padding: 16px;
+}
+
+.taskHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.priority {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 850;
+  padding: 4px 8px;
+}
+
+.priority.high {
+  background: #ffe7d6;
+  color: #994000;
+}
+
+.priority.medium {
+  background: #e8ecff;
+  color: #293f9f;
+}
+
+.priority.low {
+  background: #e8f4df;
+  color: #2f6d1d;
+}
+
+dl {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+dt {
+  color: #6d7772;
+}
+
+dd {
+  font-weight: 750;
+  margin: 0;
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actions button {
+  background: #eef3ec;
+  color: #17201b;
+  min-height: 36px;
+  padding: 8px 10px;
+}
+
+.actions .danger {
+  background: #ffe5e3;
+  color: #a52118;
+}
+
+.login {
+  align-items: center;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.loginPanel,
+.demoAccounts {
+  padding: clamp(22px, 4vw, 42px);
+}
+
+.loginPanel form,
+.demoAccounts {
+  display: grid;
+  gap: 14px;
+}
+
+label {
+  color: #59635e;
+  display: grid;
+  gap: 6px;
+  font-weight: 750;
+}
+
+.alert {
+  background: #fff3d7;
+  border: 1px solid #f2cf78;
+  border-radius: 8px;
+  color: #6f4b00;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+}
+
+.muted {
+  color: #7a857f;
+}
+
+@media (max-width: 920px) {
+  .topbar,
+  .login {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+  }
+
+  .metrics,
+  .board,
+  .taskForm {
+    grid-template-columns: 1fr;
+  }
+}
+
