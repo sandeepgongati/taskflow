@@ -2,6 +2,8 @@
 
 TaskFlow is a full-stack project management platform built with Spring Boot, React, PostgreSQL, Docker, JWT authentication, and role-based access control.
 
+➡Live Link to see the demo TaskFlow-  https://taskflow-ten-dusky.vercel.app/
+
 ## Features
 
 - JWT registration and login
@@ -63,9 +65,9 @@ On first startup, the backend seeds:
 
 GitHub Pages or Firebase Hosting can host the React frontend for free, but static hosting cannot run the Spring Boot backend. A free/low-cost public setup is:
 
-- Frontend: Firebase Hosting or GitHub Pages
-- Backend: Google App Engine Standard, Render, Fly.io, or another Java-capable tier
-- Database: Neon or Supabase PostgreSQL
+- Frontend: GitHub Pages, Vercel
+- Backend: Render
+- Database: Neon
 
 Set these environment variables for the backend host:
 
