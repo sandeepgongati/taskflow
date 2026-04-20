@@ -4,6 +4,7 @@ import { ArrowRight, BriefcaseBusiness, CalendarDays, CheckCircle2, KanbanSquare
 import './styles.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
 
 function App() {
   const [session, setSession] = useState(() => {
@@ -25,6 +26,10 @@ function App() {
   }, [session]);
 
   async function request(path, options = {}) {
+    if (DEMO_MODE) {
+      return demoRequest(path, options, session);
+    }
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
       headers: {
@@ -62,6 +67,13 @@ function App() {
 
   async function login(email, password) {
     setError('');
+    if (DEMO_MODE) {
+      const data = demoLogin(email, password);
+      localStorage.setItem('taskflow-session', JSON.stringify(data));
+      setSession(data);
+      return;
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -81,6 +93,13 @@ function App() {
     setError('');
     if (!payload.email.toLowerCase().endsWith('@taskflow.dev')) {
       throw new Error('Use your TaskFlow workspace email, for example name@taskflow.dev.');
+    }
+
+    if (DEMO_MODE) {
+      const data = demoRegister(payload);
+      localStorage.setItem('taskflow-session', JSON.stringify(data));
+      setSession(data);
+      return;
     }
 
     const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -145,7 +164,7 @@ function App() {
         <div>
           <span className="brand"><KanbanSquare size={24} /> TaskFlow</span>
           <h1>Project command center</h1>
-          <p>JWT-secured task planning with Spring Boot, React, PostgreSQL, Docker, and RBAC.</p>
+          <p>{DEMO_MODE ? 'Public portfolio demo running in the browser. Production mode connects to Spring Boot and PostgreSQL.' : 'JWT-secured task planning with Spring Boot, React, PostgreSQL, Docker, and RBAC.'}</p>
         </div>
         <div className="profile">
           <ShieldCheck size={18} />
@@ -375,7 +394,7 @@ function HomePage({ onOpenAuth }) {
       </section>
 
       <footer className="siteFooter">
-        <span>TaskFlow project management platform</span>
+        <span>TaskFlow project management platform {DEMO_MODE ? '- public browser demo' : ''}</span>
         <strong>@Sandeep Gongati</strong>
       </footer>
     </>
@@ -476,6 +495,122 @@ function roleLabel(role) {
 function formatDate(value) {
   if (!value) return 'Today';
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+}
+
+function demoLogin(email, password) {
+  const store = demoStore();
+  const user = store.users.find(item => item.email.toLowerCase() === email.toLowerCase() && item.password === password);
+  if (!user) {
+    throw new Error('Login failed. Check your email and password.');
+  }
+  return demoSession(user);
+}
+
+function demoRegister(payload) {
+  const store = demoStore();
+  const email = payload.email.toLowerCase();
+  if (!email.endsWith('@taskflow.dev')) {
+    throw new Error('Use your TaskFlow workspace email, for example name@taskflow.dev.');
+  }
+  if (store.users.some(user => user.email === email)) {
+    throw new Error('This email is already registered.');
+  }
+
+  const user = {
+    id: Date.now(),
+    name: payload.name,
+    email,
+    password: payload.password,
+    role: payload.role === 'MANAGER' ? 'MANAGER' : 'USER',
+    createdAt: new Date().toISOString(),
+  };
+  store.users.push(user);
+  saveDemoStore(store);
+  return demoSession(user);
+}
+
+function demoRequest(path, options = {}, session) {
+  const store = demoStore();
+  const method = options.method || 'GET';
+
+  if (path === '/api/tasks' && method === 'GET') {
+    return Promise.resolve(store.tasks);
+  }
+  if (path === '/api/users' && method === 'GET') {
+    return Promise.resolve(store.users.map(({ password, ...user }) => user));
+  }
+  if (path === '/api/tasks' && method === 'POST') {
+    const payload = JSON.parse(options.body);
+    const assignee = store.users.find(user => user.id === payload.assigneeId);
+    const task = {
+      id: Date.now(),
+      ...payload,
+      assigneeName: assignee?.name || 'Unassigned',
+      createdByName: session?.name || 'Demo User',
+      createdAt: new Date().toISOString(),
+    };
+    store.tasks.unshift(task);
+    saveDemoStore(store);
+    return Promise.resolve(task);
+  }
+  if (path.startsWith('/api/tasks/') && method === 'PUT') {
+    const id = Number(path.split('/').pop());
+    const payload = JSON.parse(options.body);
+    const assignee = store.users.find(user => user.id === payload.assigneeId);
+    store.tasks = store.tasks.map(task => task.id === id ? { ...task, ...payload, assigneeName: assignee?.name || 'Unassigned' } : task);
+    saveDemoStore(store);
+    return Promise.resolve(store.tasks.find(task => task.id === id));
+  }
+  if (path.startsWith('/api/tasks/') && method === 'DELETE') {
+    const id = Number(path.split('/').pop());
+    store.tasks = store.tasks.filter(task => task.id !== id);
+    saveDemoStore(store);
+    return Promise.resolve(null);
+  }
+
+  return Promise.reject(new Error('Demo endpoint not available.'));
+}
+
+function demoSession(user) {
+  return {
+    token: `demo-token-${user.id}`,
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+}
+
+function demoStore() {
+  const saved = localStorage.getItem('taskflow-demo-store');
+  if (saved) {
+    return JSON.parse(saved);
+  }
+  const now = new Date().toISOString();
+  const seeded = {
+    users: [
+      { id: 1, name: 'Sandeep Gongati', email: 'admin@taskflow.dev', password: 'Admin@123', role: 'ADMIN', createdAt: now },
+      { id: 2, name: 'Project Manager', email: 'manager@taskflow.dev', password: 'Manager@123', role: 'MANAGER', createdAt: now },
+      { id: 3, name: 'Team Member', email: 'user@taskflow.dev', password: 'User@123', role: 'USER', createdAt: now },
+    ],
+    tasks: [
+      { id: 101, title: 'Prepare public demo', description: 'Polish the portfolio homepage and auth flow.', status: 'IN_PROGRESS', priority: 'HIGH', dueDate: nextDate(3), assigneeId: 2, assigneeName: 'Project Manager', createdByName: 'Sandeep Gongati', createdAt: now },
+      { id: 102, title: 'Connect production database', description: 'Use PostgreSQL for deployed persistence.', status: 'TODO', priority: 'MEDIUM', dueDate: nextDate(7), assigneeId: 3, assigneeName: 'Team Member', createdByName: 'Sandeep Gongati', createdAt: now },
+      { id: 103, title: 'Verify GitHub deployment', description: 'Publish the static demo and test the public URL.', status: 'DONE', priority: 'HIGH', dueDate: nextDate(1), assigneeId: 1, assigneeName: 'Sandeep Gongati', createdByName: 'Sandeep Gongati', createdAt: now },
+    ],
+  };
+  saveDemoStore(seeded);
+  return seeded;
+}
+
+function saveDemoStore(store) {
+  localStorage.setItem('taskflow-demo-store', JSON.stringify(store));
+}
+
+function nextDate(days) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
 createRoot(document.getElementById('root')).render(<App />);

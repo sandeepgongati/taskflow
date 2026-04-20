@@ -86,3 +86,15 @@ VITE_API_BASE_URL=https://YOUR_BACKEND_HOST
 Then enable GitHub Pages from GitHub Actions in the repository settings.
 
 For Google/Firebase deployment, see [docs/GOOGLE_DEPLOY.md](docs/GOOGLE_DEPLOY.md).
+
+## Zero-Cost Portfolio Demo
+
+For a public portfolio showcase with no backend cost, build the frontend in demo mode:
+
+```powershell
+cd frontend
+$env:VITE_DEMO_MODE="true"
+npm run build
+```
+
+The demo stores sample users and tasks in the visitor's browser localStorage. It is ideal for a public live demo link, while the full Spring Boot + PostgreSQL backend remains available for local development and production deployment.
