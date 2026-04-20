@@ -114,3 +114,10 @@ Test:
 
 If the backend was asleep, the first login can take about a minute.
 
+## Vercel Frontend
+
+If you deploy the frontend on Vercel, the backend already accepts `https://*.vercel.app` origins. You can also add the exact Vercel domain in Render:
+
+```text
+ALLOWED_ORIGINS=https://sandeepgongati.github.io,https://taskflow-ten-dusky.vercel.app
+```

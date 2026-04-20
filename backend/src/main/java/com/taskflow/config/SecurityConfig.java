@@ -1,7 +1,9 @@
 package com.taskflow.config;
 
 import com.taskflow.security.JwtAuthenticationFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +68,9 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(AppProperties properties) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.stream(properties.allowedOrigins().split(",")).map(String::trim).toList());
+        List<String> originPatterns = new ArrayList<>(Arrays.stream(properties.allowedOrigins().split(",")).map(String::trim).toList());
+        originPatterns.add("https://*.vercel.app");
+        config.setAllowedOriginPatterns(new ArrayList<>(new LinkedHashSet<>(originPatterns)));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
