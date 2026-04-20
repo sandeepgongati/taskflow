@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: taskflow-backend
+    runtime: docker
+    plan: free
+    rootDir: backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        sync: false
