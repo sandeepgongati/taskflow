@@ -1,0 +1,13 @@
+runtime: java21
+instance_class: F1
+
+automatic_scaling:
+  max_instances: 1
+
+env_variables:
+  DATABASE_URL: "jdbc:postgresql://YOUR_NEON_HOST/YOUR_DATABASE?sslmode=require"
+  DATABASE_USERNAME: "YOUR_NEON_USERNAME"
+  DATABASE_PASSWORD: "YOUR_NEON_PASSWORD"
+  JWT_SECRET: "REPLACE_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARACTERS"
+  ALLOWED_ORIGINS: "https://YOUR_FIREBASE_SITE.web.app,https://YOUR_FIREBASE_SITE.firebaseapp.com"
+

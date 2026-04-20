@@ -61,11 +61,11 @@ On first startup, the backend seeds:
 
 ## Free Public Deployment
 
-GitHub Pages can host the React frontend for free, but it cannot run the Spring Boot backend. A free/low-cost public setup is:
+GitHub Pages or Firebase Hosting can host the React frontend for free, but static hosting cannot run the Spring Boot backend. A free/low-cost public setup is:
 
-- Frontend: GitHub Pages
-- Backend: Render free web service, Fly.io free allowance, or another Java-capable free tier
-- Database: Supabase or Neon free PostgreSQL
+- Frontend: Firebase Hosting or GitHub Pages
+- Backend: Google App Engine Standard, Render, Fly.io, or another Java-capable tier
+- Database: Neon or Supabase PostgreSQL
 
 Set these environment variables for the backend host:
 
@@ -84,3 +84,5 @@ VITE_API_BASE_URL=https://YOUR_BACKEND_HOST
 ```
 
 Then enable GitHub Pages from GitHub Actions in the repository settings.
+
+For Google/Firebase deployment, see [docs/GOOGLE_DEPLOY.md](docs/GOOGLE_DEPLOY.md).

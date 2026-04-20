@@ -33,10 +33,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        if (users.existsByEmail(request.email())) {
+        String email = request.email().toLowerCase();
+        if (users.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
-        User user = users.save(new User(request.name(), request.email(), passwordEncoder.encode(request.password()), Role.USER));
+        Role role = request.role() == Role.MANAGER ? Role.MANAGER : Role.USER;
+        User user = users.save(new User(request.name(), email, passwordEncoder.encode(request.password()), role));
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthResponse.from(user, jwtService.generateToken(user)));
     }
 
@@ -48,4 +50,3 @@ public class AuthController {
         return AuthResponse.from(user, jwtService.generateToken(user));
     }
 }
-

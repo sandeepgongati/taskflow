@@ -1,6 +1,6 @@
 :root {
-  color: #17201b;
-  background: #f5f6f1;
+  color: #16201d;
+  background: #f6f7f4;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
 }
@@ -37,6 +37,16 @@ button {
 
 button:hover {
   background: #174f3e;
+}
+
+.ghostButton {
+  background: transparent;
+  border: 1px solid rgba(31, 111, 84, 0.28);
+  color: #1f6f54;
+}
+
+.ghostButton:hover {
+  background: #e7f3eb;
 }
 
 .app {
@@ -76,9 +86,7 @@ p {
 
 .profile,
 .metric,
-.taskCard,
-.loginPanel,
-.demoAccounts {
+.taskCard {
   background: white;
   border: 1px solid #dde2d7;
   border-radius: 8px;
@@ -126,6 +134,26 @@ p {
   font-size: 2.2rem;
 }
 
+.sectionHeader {
+  align-items: flex-end;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sectionHeader h2 {
+  font-size: 1.55rem;
+  margin: 6px 0 0;
+}
+
+.sectionHeader strong {
+  background: #e7f3eb;
+  border-radius: 999px;
+  color: #1f6f54;
+  padding: 8px 12px;
+}
+
 .taskForm {
   align-items: center;
   display: grid;
@@ -148,6 +176,7 @@ select {
   display: grid;
   gap: 18px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 28px;
 }
 
 .column {
@@ -235,23 +264,171 @@ dd {
 }
 
 .login {
-  align-items: center;
+  align-items: stretch;
+  background:
+    linear-gradient(135deg, rgba(31, 111, 84, 0.95), rgba(22, 32, 29, 0.92)),
+    url("https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80");
+  background-position: center;
+  background-size: cover;
   display: grid;
-  gap: 20px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  gap: clamp(22px, 5vw, 64px);
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
   min-height: 100vh;
-  padding: 32px;
+  padding: clamp(20px, 5vw, 60px);
 }
 
-.loginPanel,
-.demoAccounts {
-  padding: clamp(22px, 4vw, 42px);
+.loginHero {
+  align-content: center;
+  color: white;
+  display: grid;
+  max-width: 760px;
 }
 
-.loginPanel form,
-.demoAccounts {
+.loginHero .brand {
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 16px;
+}
+
+.loginHero h1 {
+  color: white;
+  font-size: clamp(2.7rem, 6vw, 5.5rem);
+  line-height: 0.96;
+  margin: 18px 0;
+}
+
+.loginHero p {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.12rem;
+  max-width: 620px;
+}
+
+.heroStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.heroStats span {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: white;
+  display: inline-flex;
+  font-weight: 750;
+  gap: 8px;
+  padding: 10px 13px;
+}
+
+.logoMark {
+  align-items: center;
+  background: #ffffff;
+  border-radius: 8px;
+  color: #1f6f54;
+  display: inline-flex;
+  height: 58px;
+  justify-content: center;
+  width: 58px;
+}
+
+.logoMark.small {
+  background: #e7f3eb;
+  flex: 0 0 auto;
+  height: 44px;
+  width: 44px;
+}
+
+.loginPanel {
+  align-self: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  padding: clamp(22px, 4vw, 36px);
+}
+
+.loginPanel form {
   display: grid;
   gap: 14px;
+}
+
+.authHeader {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.authHeader h2 {
+  font-size: 1.55rem;
+  line-height: 1.1;
+  margin: 0 0 4px;
+}
+
+.authHeader p {
+  font-size: 0.94rem;
+  margin: 0;
+}
+
+.modeSwitch {
+  background: #eef3ec;
+  border: 1px solid #d9e4d9;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 18px;
+  padding: 4px;
+}
+
+.modeSwitch button {
+  background: transparent;
+  color: #59635e;
+  min-height: 38px;
+}
+
+.modeSwitch button.active {
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(23, 32, 27, 0.08);
+  color: #1f6f54;
+}
+
+.quickRoles {
+  border-top: 1px solid #e3e8df;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+  padding-top: 18px;
+}
+
+.quickRoles button {
+  align-items: flex-start;
+  background: #f7faf5;
+  border: 1px solid #dbe5db;
+  color: #17201b;
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  min-height: 62px;
+  padding: 10px;
+}
+
+.quickRoles button:hover {
+  background: #e7f3eb;
+}
+
+.quickRoles span {
+  color: #68746e;
+  font-size: 0.82rem;
+}
+
+.fieldHint {
+  color: #68746e;
+  font-size: 0.84rem;
+  margin: -6px 0 0;
 }
 
 label {
@@ -274,6 +451,262 @@ label {
   color: #7a857f;
 }
 
+.teamDirectory {
+  background: white;
+  border: 1px solid #dde2d7;
+  border-radius: 8px;
+  box-shadow: 0 18px 50px rgba(23, 32, 27, 0.08);
+  padding: 20px;
+}
+
+.userTable {
+  border: 1px solid #e0e7dd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.userRow {
+  align-items: center;
+  border-top: 1px solid #e8eee5;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1.1fr 1.4fr 1fr 0.9fr;
+  min-height: 56px;
+  padding: 12px 14px;
+}
+
+.userRow:first-child {
+  border-top: 0;
+}
+
+.userRow.header {
+  background: #f3f7f1;
+  color: #68746e;
+  font-size: 0.82rem;
+  font-weight: 850;
+  min-height: 42px;
+  text-transform: uppercase;
+}
+
+.roleBadge {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 850;
+  justify-content: center;
+  padding: 7px 10px;
+  width: fit-content;
+}
+
+.roleBadge.admin {
+  background: #e9edff;
+  color: #293f9f;
+}
+
+.roleBadge.manager {
+  background: #e7f3eb;
+  color: #1f6f54;
+}
+
+.roleBadge.user {
+  background: #fff1df;
+  color: #95520f;
+}
+
+.publicSite {
+  background: #f6f7f4;
+  min-height: 100vh;
+}
+
+.siteNav {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 22px 20px;
+}
+
+.siteNav > div {
+  display: flex;
+  gap: 10px;
+}
+
+.homeHero {
+  align-items: center;
+  display: grid;
+  gap: clamp(28px, 6vw, 72px);
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  margin: 0 auto;
+  max-width: 1180px;
+  min-height: calc(100vh - 250px);
+  padding: 42px 20px 58px;
+}
+
+.eyebrow {
+  color: #1f6f54;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.homeHero h1 {
+  color: #16201d;
+  font-size: clamp(2.5rem, 6vw, 5.1rem);
+  line-height: 0.96;
+  margin: 16px 0;
+}
+
+.homeHero p {
+  font-size: 1.12rem;
+  max-width: 680px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.productPreview {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88)),
+    linear-gradient(135deg, #dfeee4, #eef1fb);
+  border: 1px solid #d7dfd4;
+  border-radius: 8px;
+  box-shadow: 0 28px 80px rgba(23, 32, 27, 0.16);
+  min-height: 430px;
+  overflow: hidden;
+  padding: 18px;
+}
+
+.previewHeader {
+  align-items: center;
+  border-bottom: 1px solid #dde5db;
+  display: flex;
+  gap: 7px;
+  margin: -18px -18px 18px;
+  padding: 16px 18px;
+}
+
+.previewHeader span {
+  background: #b5c4bc;
+  border-radius: 999px;
+  height: 10px;
+  width: 10px;
+}
+
+.previewGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 18px;
+}
+
+.previewGrid article,
+.previewTask {
+  background: white;
+  border: 1px solid #dfe6dc;
+  border-radius: 8px;
+}
+
+.previewGrid article {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+}
+
+.previewGrid strong {
+  font-size: 1.7rem;
+}
+
+.previewGrid span {
+  color: #66716b;
+  font-size: 0.85rem;
+}
+
+.previewTask {
+  height: 76px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.previewTask::before,
+.previewTask::after {
+  content: "";
+  position: absolute;
+}
+
+.previewTask::before {
+  background: #203129;
+  border-radius: 999px;
+  height: 13px;
+  left: 18px;
+  top: 20px;
+  width: 44%;
+}
+
+.previewTask::after {
+  background: #dce5dc;
+  border-radius: 999px;
+  bottom: 18px;
+  height: 10px;
+  left: 18px;
+  width: 70%;
+}
+
+.previewTask.high {
+  border-left: 5px solid #bd5b16;
+}
+
+.previewTask.medium {
+  border-left: 5px solid #3d56bd;
+}
+
+.previewTask.low {
+  border-left: 5px solid #1f6f54;
+}
+
+.featureBand {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 0 20px 46px;
+}
+
+.featureBand article {
+  background: white;
+  border: 1px solid #dfe6dc;
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.featureBand svg {
+  color: #1f6f54;
+}
+
+.featureBand h2 {
+  margin: 14px 0 8px;
+}
+
+.siteFooter {
+  align-items: center;
+  border-top: 1px solid #dfe6dc;
+  color: #59635e;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 20px;
+}
+
+.siteFooter strong {
+  color: #1f6f54;
+}
+
 @media (max-width: 920px) {
   .topbar,
   .login {
@@ -286,8 +719,57 @@ label {
 
   .metrics,
   .board,
-  .taskForm {
+  .taskForm,
+  .userRow,
+  .homeHero,
+  .featureBand {
     grid-template-columns: 1fr;
+  }
+
+  .sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .userRow.header {
+    display: none;
+  }
+
+  .loginHero {
+    min-height: 42vh;
+  }
+
+  .homeHero {
+    min-height: auto;
   }
 }
 
+@media (max-width: 560px) {
+  .quickRoles {
+    grid-template-columns: 1fr;
+  }
+
+  .heroStats {
+    display: grid;
+  }
+
+  .siteNav,
+  .siteFooter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .siteNav > div,
+  .heroActions {
+    width: 100%;
+  }
+
+  .siteNav button,
+  .heroActions button {
+    width: 100%;
+  }
+
+  .previewGrid {
+    grid-template-columns: 1fr;
+  }
+}

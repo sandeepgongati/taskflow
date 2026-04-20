@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { CalendarDays, CheckCircle2, KanbanSquare, Lock, LogOut, Plus, ShieldCheck, Users } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, CalendarDays, CheckCircle2, KanbanSquare, Lock, LogOut, Plus, ShieldCheck, Sparkles, UserPlus, Users } from 'lucide-react';
 import './styles.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -47,7 +47,10 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const [taskData, userData] = await Promise.all([request('/api/tasks'), request('/api/users')]);
+      const [taskData, userData] = await Promise.all([
+        request('/api/tasks'),
+        canManage ? request('/api/users') : Promise.resolve([]),
+      ]);
       setTasks(taskData);
       setUsers(userData);
     } catch (err) {
@@ -67,6 +70,27 @@ function App() {
 
     if (!response.ok) {
       throw new Error('Login failed. Check your email and password.');
+    }
+
+    const data = await response.json();
+    localStorage.setItem('taskflow-session', JSON.stringify(data));
+    setSession(data);
+  }
+
+  async function register(payload) {
+    setError('');
+    if (!payload.email.toLowerCase().endsWith('@taskflow.dev')) {
+      throw new Error('Use your TaskFlow workspace email, for example name@taskflow.dev.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(response.status === 409 ? 'This email is already registered.' : 'Registration failed. Use a valid @taskflow.dev email and try again.');
     }
 
     const data = await response.json();
@@ -112,7 +136,7 @@ function App() {
   }
 
   if (!session) {
-    return <LoginScreen onLogin={login} />;
+    return <LoginScreen onLogin={login} onRegister={register} />;
   }
 
   return (
@@ -138,7 +162,7 @@ function App() {
       <section className="metrics">
         <Metric icon={<CheckCircle2 />} label="Completed" value={tasks.filter(t => t.status === 'DONE').length} />
         <Metric icon={<CalendarDays />} label="Active" value={tasks.filter(t => t.status !== 'DONE').length} />
-        <Metric icon={<Users />} label="Members" value={users.length} />
+        <Metric icon={<Users />} label={canManage ? 'Registered users' : 'Visible team'} value={canManage ? users.length : tasks.length} />
       </section>
 
       {canManage && (
@@ -172,45 +196,189 @@ function App() {
         onStatusChange={updateStatus}
         onDelete={deleteTask}
       />
+
+      {canManage && <TeamDirectory users={users} />}
     </main>
   );
 }
 
-function LoginScreen({ onLogin }) {
+function LoginScreen({ onLogin, onRegister }) {
+  const accounts = {
+    admin: { label: 'Admin', detail: 'Developer', email: 'admin@taskflow.dev', password: 'Admin@123' },
+    manager: { label: 'Manager', detail: 'Team Lead', email: 'manager@taskflow.dev', password: 'Manager@123' },
+    user: { label: 'User', detail: 'Team Member', email: 'user@taskflow.dev', password: 'User@123' },
+  };
+
+  const [view, setView] = useState('home');
+  const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('admin@taskflow.dev');
   const [password, setPassword] = useState('Admin@123');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('USER');
   const [error, setError] = useState('');
 
   async function submit(event) {
     event.preventDefault();
     setError('');
     try {
-      await onLogin(email, password);
+      if (mode === 'register') {
+        await onRegister({ name, email, password, role });
+      } else {
+        await onLogin(email, password);
+      }
     } catch (err) {
       setError(err.message);
     }
   }
 
+  function chooseAccount(account) {
+    setView('auth');
+    setMode('login');
+    setEmail(account.email);
+    setPassword(account.password);
+    setError('');
+  }
+
+  function openAuth(nextMode) {
+    setMode(nextMode);
+    if (nextMode === 'register') {
+      setEmail('');
+      setPassword('');
+      setName('');
+      setRole('USER');
+    }
+    setView('auth');
+    setError('');
+  }
+
   return (
-    <main className="login">
-      <section className="loginPanel">
-        <span className="brand"><KanbanSquare size={26} /> TaskFlow</span>
-        <h1>Full-stack project management</h1>
-        <p>Sign in with a seeded account to view RBAC-protected task APIs and the React dashboard.</p>
+    <main className={view === 'home' ? 'publicSite' : 'login'}>
+      {view === 'home' ? (
+        <HomePage onOpenAuth={openAuth} />
+      ) : (
+        <>
+          <section className="loginHero">
+            <span className="logoMark"><KanbanSquare size={30} /></span>
+            <span className="brand">TaskFlow</span>
+            <h1>Plan work, assign owners, and ship projects with clarity.</h1>
+            <p>A secure project workspace for developers, team leads, and team members.</p>
+            <div className="heroStats">
+              <span><ShieldCheck size={17} /> JWT security</span>
+              <span><BriefcaseBusiness size={17} /> Role-based access</span>
+              <span><Sparkles size={17} /> Production-ready UI</span>
+            </div>
+          </section>
+
+          <section className="loginPanel">
+        <div className="authHeader">
+          <span className="logoMark small"><KanbanSquare size={22} /></span>
+          <div>
+            <h2>{mode === 'login' ? 'Welcome back' : 'Create your workspace account'}</h2>
+            <p>{mode === 'login' ? 'Use your role credentials to continue.' : 'Only Team Lead and Team Member accounts can self-register.'}</p>
+          </div>
+        </div>
+
+        <div className="modeSwitch" aria-label="Authentication mode">
+          <button className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')} type="button">Sign in</button>
+          <button className={mode === 'register' ? 'active' : ''} onClick={() => setMode('register')} type="button">Register</button>
+        </div>
+
         <form onSubmit={submit}>
-          <label>Email<input value={email} onChange={event => setEmail(event.target.value)} /></label>
-          <label>Password<input type="password" value={password} onChange={event => setPassword(event.target.value)} /></label>
+          {mode === 'register' && (
+            <>
+              <label>Full name<input value={name} onChange={event => setName(event.target.value)} required /></label>
+              <label>Role
+                <select value={role} onChange={event => setRole(event.target.value)}>
+                  <option value="MANAGER">Manager - Team Lead</option>
+                  <option value="USER">User - Team Member</option>
+                </select>
+              </label>
+            </>
+          )}
+          <label>Email<input value={email} onChange={event => setEmail(event.target.value)} placeholder={mode === 'register' ? 'yourname@taskflow.dev' : 'admin@taskflow.dev'} required /></label>
+          {mode === 'register' && <p className="fieldHint">Registration is limited to workspace emails ending in @taskflow.dev.</p>}
+          <label>Password<input type="password" value={password} onChange={event => setPassword(event.target.value)} minLength={8} required /></label>
           {error && <div className="alert">{error}</div>}
-          <button type="submit"><Lock size={18} /> Sign in</button>
+          <button type="submit">{mode === 'login' ? <Lock size={18} /> : <UserPlus size={18} />} {mode === 'login' ? 'Sign in securely' : 'Create account'}</button>
         </form>
+
+        <div className="quickRoles">
+          <button type="button" onClick={() => chooseAccount(accounts.admin)}>
+            <strong>Admin</strong><span>Developer</span>
+          </button>
+          <button type="button" onClick={() => chooseAccount(accounts.manager)}>
+            <strong>Manager</strong><span>Team Lead</span>
+          </button>
+          <button type="button" onClick={() => chooseAccount(accounts.user)}>
+            <strong>User</strong><span>Team Member</span>
+          </button>
+        </div>
       </section>
-      <aside className="demoAccounts">
-        <h2>Demo accounts</h2>
-        <button onClick={() => { setEmail('admin@taskflow.dev'); setPassword('Admin@123'); }}>Admin</button>
-        <button onClick={() => { setEmail('manager@taskflow.dev'); setPassword('Manager@123'); }}>Manager</button>
-        <button onClick={() => { setEmail('user@taskflow.dev'); setPassword('User@123'); }}>User</button>
-      </aside>
+        </>
+      )}
     </main>
+  );
+}
+
+function HomePage({ onOpenAuth }) {
+  return (
+    <>
+      <nav className="siteNav">
+        <span className="brand"><KanbanSquare size={24} /> TaskFlow</span>
+        <div>
+          <button className="ghostButton" type="button" onClick={() => onOpenAuth('login')}>Sign in</button>
+          <button type="button" onClick={() => onOpenAuth('register')}>Register <ArrowRight size={17} /></button>
+        </div>
+      </nav>
+
+      <section className="homeHero">
+        <div>
+          <span className="eyebrow">Full-stack project management platform</span>
+          <h1>Run projects with secure roles, clear ownership, and real-time task visibility.</h1>
+          <p>TaskFlow brings teams into one focused workspace with JWT authentication, role-based permissions, task planning, and a production-minded React experience backed by Spring Boot APIs.</p>
+          <div className="heroActions">
+            <button type="button" onClick={() => onOpenAuth('register')}>Create account <UserPlus size={18} /></button>
+            <button className="ghostButton" type="button" onClick={() => onOpenAuth('login')}>Sign in <Lock size={18} /></button>
+          </div>
+        </div>
+        <div className="productPreview" aria-hidden="true">
+          <div className="previewHeader">
+            <span></span><span></span><span></span>
+          </div>
+          <div className="previewGrid">
+            <article><strong>12</strong><span>Active tasks</span></article>
+            <article><strong>04</strong><span>Team leads</span></article>
+            <article><strong>98%</strong><span>Delivery focus</span></article>
+          </div>
+          <div className="previewTask high"></div>
+          <div className="previewTask medium"></div>
+          <div className="previewTask low"></div>
+        </div>
+      </section>
+
+      <section className="featureBand">
+        <article>
+          <ShieldCheck size={26} />
+          <h2>Secure by role</h2>
+          <p>Admin, Manager, and User roles keep project actions controlled and predictable.</p>
+        </article>
+        <article>
+          <BriefcaseBusiness size={26} />
+          <h2>Built for delivery</h2>
+          <p>Track task status, priority, due dates, ownership, and team accountability.</p>
+        </article>
+        <article>
+          <Sparkles size={26} />
+          <h2>Deployment ready</h2>
+          <p>Designed with Docker, PostgreSQL, CI workflows, and public hosting in mind.</p>
+        </article>
+      </section>
+
+      <footer className="siteFooter">
+        <span>TaskFlow project management platform</span>
+        <strong>@Sandeep Gongati</strong>
+      </footer>
+    </>
   );
 }
 
@@ -221,6 +389,36 @@ function Metric({ icon, label, value }) {
       <span>{label}</span>
       <strong>{value}</strong>
     </article>
+  );
+}
+
+function TeamDirectory({ users }) {
+  return (
+    <section className="teamDirectory">
+      <div className="sectionHeader">
+        <div>
+          <span className="eyebrow">Admin visibility</span>
+          <h2>Registered workspace users</h2>
+        </div>
+        <strong>{users.length} active accounts</strong>
+      </div>
+      <div className="userTable">
+        <div className="userRow header">
+          <span>Name</span>
+          <span>Email</span>
+          <span>Role</span>
+          <span>Registered</span>
+        </div>
+        {users.map(user => (
+          <div className="userRow" key={user.id}>
+            <strong>{user.name}</strong>
+            <span>{user.email}</span>
+            <span className={`roleBadge ${user.role.toLowerCase()}`}>{roleLabel(user.role)}</span>
+            <span>{formatDate(user.createdAt)}</span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -269,5 +467,15 @@ function cleanError(message) {
   return message.replace(/^\{"timestamp".+?"message":"?/, '').replace(/".*$/, '') || message;
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+function roleLabel(role) {
+  if (role === 'ADMIN') return 'Admin - Developer';
+  if (role === 'MANAGER') return 'Manager - Team Lead';
+  return 'User - Team Member';
+}
 
+function formatDate(value) {
+  if (!value) return 'Today';
+  return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+}
+
+createRoot(document.getElementById('root')).render(<App />);

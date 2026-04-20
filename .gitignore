@@ -6,6 +6,7 @@ node_modules/
 dist/
 .env
 .env.local
+frontend/.env.production
+backend/src/main/appengine/app.yaml
 postgres_data/
 *.log
-
