@@ -1,102 +1,29 @@
-# TaskFlow
+# TaskFlow – Full-Stack Project Management Platform
 
-TaskFlow is a full-stack project management platform built with Spring Boot, React, PostgreSQL, Docker, JWT authentication, and role-based access control.
+TaskFlow is a full-stack project management application built to help teams organize, track, and manage their work efficiently. It combines a Spring Boot backend with a modern React frontend and uses PostgreSQL for reliable data storage. The system is designed with secure authentication and role-based access control to support real-world team workflows.
 
-➡Live Link to see the demo TaskFlow-  https://taskflow-ten-dusky.vercel.app/
+Live Demo:
+https://taskflow-ten-dusky.vercel.app/
 
-## Features
+Overview
 
-- JWT registration and login
-- Role-based access for `ADMIN`, `MANAGER`, and `USER`
-- Task CRUD API backed by PostgreSQL
-- React dashboard with authentication state
-- Dockerized frontend, backend, and database
-- GitHub Actions workflows for CI and GitHub Pages frontend deployment
+The application supports three types of users: Admin, Manager, and User, each with different levels of access and responsibilities. Admins manage the system, managers handle task operations, and users focus on completing assigned work.
 
-## Local Development
+TaskFlow provides a clean and responsive interface where users can interact with tasks in real time. It ensures that only authorized users can perform specific actions, making the system both secure and practical for collaborative environments.
 
-### Backend
+Key Features
+Secure authentication using JWT-based login and registration
+Role-based access control for Admin, Manager, and User
+Full task management functionality (create, update, delete, and view tasks)
+Interactive React dashboard with real-time state handling
+Backend APIs built with Spring Boot for scalable and structured logic
+PostgreSQL database for persistent and reliable data storage
+Dockerized architecture for consistent and isolated environments
+CI/CD integration using GitHub Actions for automated workflows
+How the system works
 
-```powershell
-cd backend
-mvn spring-boot:run
-```
+When a user logs into TaskFlow, they are authenticated using JWT tokens. Based on their assigned role, they gain access to specific features within the application.
 
-The backend runs on `http://localhost:8080`.
+Managers and admins can create and manage tasks, assign them to users, and monitor progress. Regular users can view and update their assigned tasks. All operations are handled through secure backend APIs, and data is stored in PostgreSQL.
 
-If Docker/PostgreSQL is not running, use the local demo profile:
-
-```powershell
-cd backend
-mvn spring-boot:run "-Dspring-boot.run.profiles=demo"
-```
-
-### Frontend
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-The frontend runs on `http://localhost:5173`.
-
-### Docker
-
-```powershell
-docker compose up --build
-```
-
-Frontend: `http://localhost:3000`  
-Backend: `http://localhost:8080`  
-PostgreSQL: `localhost:5432`
-
-## Demo Accounts
-
-On first startup, the backend seeds:
-
-| Email | Password | Role |
-| --- | --- | --- |
-| admin@taskflow.dev | Admin@123 | ADMIN |
-| manager@taskflow.dev | Manager@123 | MANAGER |
-| user@taskflow.dev | User@123 | USER |
-
-## Free Public Deployment
-
-GitHub Pages or Firebase Hosting can host the React frontend for free, but static hosting cannot run the Spring Boot backend. A free/low-cost public setup is:
-
-- Frontend: GitHub Pages, Vercel
-- Backend: Render
-- Database: Neon
-
-Set these environment variables for the backend host:
-
-```text
-DATABASE_URL=jdbc:postgresql://HOST:5432/DB
-DATABASE_USERNAME=...
-DATABASE_PASSWORD=...
-JWT_SECRET=replace-with-a-long-random-secret
-ALLOWED_ORIGINS=https://YOUR_GITHUB_USERNAME.github.io
-```
-
-For GitHub Pages, set this repository secret:
-
-```text
-VITE_API_BASE_URL=https://YOUR_BACKEND_HOST
-```
-
-Then enable GitHub Pages from GitHub Actions in the repository settings.
-
-For Google/Firebase deployment, see [docs/GOOGLE_DEPLOY.md](docs/GOOGLE_DEPLOY.md).
-
-## Zero-Cost Portfolio Demo
-
-For a public portfolio showcase with no backend cost, build the frontend in demo mode:
-
-```powershell
-cd frontend
-$env:VITE_DEMO_MODE="true"
-npm run build
-```
-
-The demo stores sample users and tasks in the visitor's browser localStorage. It is ideal for a public live demo link, while the full Spring Boot + PostgreSQL backend remains available for local development and production deployment.
+The frontend communicates with the backend seamlessly, providing a smooth user experience with dynamic updates and clear task visibility.
