@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Stream;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,8 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/actuator/health").permitAll()
+                        .requestMatchers("/", "/api/health", "/api/auth/**", "/actuator/health").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyRole("ADMIN", "MANAGER", "USER")
                         .requestMatchers("/api/tasks/**").hasAnyRole("ADMIN", "MANAGER")
                         .anyRequest().authenticated()
@@ -68,8 +70,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(AppProperties properties) {
         CorsConfiguration config = new CorsConfiguration();
-        List<String> originPatterns = new ArrayList<>(Arrays.stream(properties.allowedOrigins().split(",")).map(String::trim).toList());
-        originPatterns.add("https://*.vercel.app");
+        List<String> originPatterns = new ArrayList<>(Stream.concat(
+                        Arrays.stream(properties.allowedOrigins().split(",")).map(String::trim).filter(origin -> !origin.isBlank()),
+                        Stream.of("https://*.vercel.app", "https://*.github.io")
+                )
+                .toList());
         config.setAllowedOriginPatterns(new ArrayList<>(new LinkedHashSet<>(originPatterns)));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));

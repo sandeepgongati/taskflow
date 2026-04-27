@@ -33,19 +33,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        String email = request.email().toLowerCase();
+        String email = request.email().trim().toLowerCase();
         if (users.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
-        Role role = request.role() == Role.MANAGER ? Role.MANAGER : Role.USER;
-        User user = users.save(new User(request.name(), email, passwordEncoder.encode(request.password()), role));
+        User user = users.save(new User(request.name(), email, passwordEncoder.encode(request.password()), Role.USER));
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthResponse.from(user, jwtService.generateToken(user)));
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
-        User user = users.findByEmail(request.email())
+        String email = request.email().trim().toLowerCase();
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, request.password()));
+        User user = users.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
         return AuthResponse.from(user, jwtService.generateToken(user));
     }

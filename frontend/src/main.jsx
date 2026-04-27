@@ -233,7 +233,6 @@ function LoginScreen({ onLogin, onRegister }) {
   const [email, setEmail] = useState('admin@taskflow.dev');
   const [password, setPassword] = useState('Admin@123');
   const [name, setName] = useState('');
-  const [role, setRole] = useState('USER');
   const [error, setError] = useState('');
 
   async function submit(event) {
@@ -241,12 +240,12 @@ function LoginScreen({ onLogin, onRegister }) {
     setError('');
     try {
       if (mode === 'register') {
-        await onRegister({ name, email, password, role });
+        await onRegister({ name, email, password });
       } else {
         await onLogin(email, password);
       }
     } catch (err) {
-      setError(err.message);
+      setError(cleanError(err.message));
     }
   }
 
@@ -264,7 +263,6 @@ function LoginScreen({ onLogin, onRegister }) {
       setEmail('');
       setPassword('');
       setName('');
-      setRole('USER');
     }
     setView('auth');
     setError('');
@@ -293,7 +291,7 @@ function LoginScreen({ onLogin, onRegister }) {
           <span className="logoMark small"><KanbanSquare size={22} /></span>
           <div>
             <h2>{mode === 'login' ? 'Welcome back' : 'Create your workspace account'}</h2>
-            <p>{mode === 'login' ? 'Use your role credentials to continue.' : 'Only Team Lead and Team Member accounts can self-register.'}</p>
+            <p>{mode === 'login' ? 'Use your role credentials to continue.' : 'Create a Team Member account with your workspace email.'}</p>
           </div>
         </div>
 
@@ -306,12 +304,6 @@ function LoginScreen({ onLogin, onRegister }) {
           {mode === 'register' && (
             <>
               <label>Full name<input value={name} onChange={event => setName(event.target.value)} required /></label>
-              <label>Role
-                <select value={role} onChange={event => setRole(event.target.value)}>
-                  <option value="MANAGER">Manager - Team Lead</option>
-                  <option value="USER">User - Team Member</option>
-                </select>
-              </label>
             </>
           )}
           <label>Email<input value={email} onChange={event => setEmail(event.target.value)} placeholder={mode === 'register' ? 'yourname@taskflow.dev' : 'admin@taskflow.dev'} required /></label>
@@ -483,6 +475,9 @@ function TaskBoard({ tasks, loading, canManage, canDelete, onStatusChange, onDel
 }
 
 function cleanError(message) {
+  if (message === 'Failed to fetch') {
+    return 'Unable to reach the backend. Render may still be deploying or waking up; verify the backend health URL and Vercel API setting.';
+  }
   return message.replace(/^\{"timestamp".+?"message":"?/, '').replace(/".*$/, '') || message;
 }
 
